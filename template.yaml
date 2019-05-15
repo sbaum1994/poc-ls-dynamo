@@ -18,11 +18,11 @@ Resources:
       Policies:
         - AWSXrayWriteOnlyAccess
         - DynamoDBCrudPolicy:
-            TableName: !Ref traceTable
+            TableName: !Ref spanTable
       Environment:
         Variables:
-          TABLE_NAME: !Ref traceTable
-          TABLE_ARN: !GetAtt traceTable.Arn
+          TABLE_NAME: !Ref spanTable
+          TABLE_ARN: !GetAtt spanTable.Arn
     Metadata:
       StackeryName: pushTraces
   Function:
@@ -41,33 +41,33 @@ Resources:
       Policies:
         - AWSXrayWriteOnlyAccess
       Events:
-        traceTable:
+        spanTable:
           Type: DynamoDB
           Properties:
-            Stream: !GetAtt traceTable.StreamArn
+            Stream: !GetAtt spanTable.StreamArn
             StartingPosition: TRIM_HORIZON
             BatchSize: 1
     Metadata:
       StackeryName: Listener
-  traceTable:
+  spanTable:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
         - AttributeName: span_guid
           AttributeType: S
-        - AttributeName: trace_guid
+        - AttributeName: span_guid
           AttributeType: S
       KeySchema:
-        - AttributeName: span_guid
-          KeyType: HASH
         - AttributeName: trace_guid
+          KeyType: HASH
+        - AttributeName: span_guid
           KeyType: RANGE
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
-      TableName: !Sub ${AWS::StackName}-traceTable
+      TableName: !Sub ${AWS::StackName}-spanTable
 Parameters:
   StackeryStackTagName:
     Type: String
