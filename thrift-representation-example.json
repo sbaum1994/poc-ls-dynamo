@@ -1,0 +1,144 @@
+{
+	"requests": [
+		{
+			"detached": true,
+			"auth": {
+				"access_token": "425c9b9734e6cd039b41689aa83937cd"
+			},
+			"report": {
+				"runtime": {
+					"guid": "60599caa0fa3ab23",
+					"start_micros": 1557951933605332,
+					"group_name": "longrunning",
+					"attrs": [
+						{
+							"Key": "lightstep.tracer_version",
+							"Value": "0.21.1"
+						},
+						{
+							"Key": "lightstep.tracer_platform",
+							"Value": "node"
+						},
+						{
+							"Key": "lightstep.tracer_platform_version",
+							"Value": "v8.11.3"
+						},
+						{
+							"Key": "lightstep.node_platform",
+							"Value": "darwin"
+						},
+						{
+							"Key": "lightstep.node_arch",
+							"Value": "x64"
+						},
+						{
+							"Key": "lightstep.hostname",
+							"Value": "LS-MAC-041.local"
+						},
+						{
+							"Key": "lightstep.command_line",
+							"Value": "/usr/local/bin/node /Users/stephanie/workspace/poc-ls-dynamo/src/spanGenerator/index.js"
+						}
+					]
+				},
+				"span_records": [
+					{
+						"span_guid": "6e562dad7257d4c3",
+						"trace_guid": "0b81215071f8c43a",
+						"runtime_guid": "60599caa0fa3ab23",
+						"span_name": "child",
+						"join_ids": null,
+						"oldest_micros": 1557948693629000,
+						"youngest_micros": 1557951573629000,
+						"attributes": [
+							{
+								"Key": "parent_span_guid",
+								"Value": "2d0000917c551e5a"
+							}
+						],
+						"error_flag": false,
+						"log_records": []
+					},
+					{
+						"span_guid": "16d1c56041f2ea37",
+						"trace_guid": "0b81215071f8c43a",
+						"runtime_guid": "60599caa0fa3ab23",
+						"span_name": "child0",
+						"join_ids": null,
+						"oldest_micros": 1557948789629000,
+						"youngest_micros": 1557949557629000,
+						"attributes": [
+							{
+								"Key": "parent_span_guid",
+								"Value": "6e562dad7257d4c3"
+							}
+						],
+						"error_flag": false,
+						"log_records": []
+					},
+					{
+						"span_guid": "2d89d560470c6e5e",
+						"trace_guid": "0b81215071f8c43a",
+						"runtime_guid": "60599caa0fa3ab23",
+						"span_name": "child1",
+						"join_ids": null,
+						"oldest_micros": 1557949749629000,
+						"youngest_micros": 1557950517629000,
+						"attributes": [
+							{
+								"Key": "parent_span_guid",
+								"Value": "6e562dad7257d4c3"
+							}
+						],
+						"error_flag": false,
+						"log_records": []
+					},
+					{
+						"span_guid": "597877875956c6d4",
+						"trace_guid": "0b81215071f8c43a",
+						"runtime_guid": "60599caa0fa3ab23",
+						"span_name": "child2",
+						"join_ids": null,
+						"oldest_micros": 1557950709629000,
+						"youngest_micros": 1557951477629000,
+						"attributes": [
+							{
+								"Key": "parent_span_guid",
+								"Value": "6e562dad7257d4c3"
+							}
+						],
+						"error_flag": false,
+						"log_records": []
+					},
+					{
+						"span_guid": "2d0000917c551e5a",
+						"trace_guid": "0b81215071f8c43a",
+						"runtime_guid": "60599caa0fa3ab23",
+						"span_name": "op",
+						"join_ids": null,
+						"oldest_micros": 1557948333629000,
+						"youngest_micros": 1557951933629000,
+						"attributes": [
+							{
+								"Key": "finished_flag",
+								"Value": "true"
+							}
+						],
+						"error_flag": false,
+						"log_records": []
+					}
+				],
+				"log_records": null,
+				"timestamp_offset_micros": 0,
+				"oldest_micros": 1557951933605332,
+				"youngest_micros": 1557951933634677,
+				"counters": null,
+				"internal_logs": [],
+				"internal_metrics": {
+					"counts": [],
+					"gauges": null
+				}
+			}
+		}
+	]
+}

@@ -1,6 +1,7 @@
 {
   "private": true,
   "dependencies": {
-    "aws-sdk": "~2"
+    "array.prototype.flatmap": "^1.2.1",
+    "aws-sdk": "^2.456.0"
   }
 }

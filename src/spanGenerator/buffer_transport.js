@@ -3,7 +3,7 @@ var deepClone    = require("clone");
 var _            = require("underscore");
 
 // Make sure the creds are correct!
-var AWS = require('aws-sdk');
+const AWS = require('aws-sdk');
 AWS.config.update({ region: 'us-east-1' });
 const FUNCTION_NAME = 'poc-ls-dynamo-development-pushTraces'
 
@@ -52,9 +52,9 @@ BufferTransport.prototype.report = function(detached, auth, report, done) {
   // Send to lambda function here
 
   // Debugging
-  // console.log(JSON.stringify({
-  //   requests: this._requests,
-  // }));
+  console.log(JSON.stringify({
+    requests: this._requests,
+  }));
 
   this.invoke({ requests: this._requests })
     .then((resp) => {

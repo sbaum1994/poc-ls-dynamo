@@ -59,6 +59,7 @@ const generateRoot = (dur) => {
   let child = generateChild(a, b, dur, root, 'child');
   let children = generateChildren(child.a, child.b, child.dur, child.span, 3);
   // need to click on root in the ui to trigger the trace to assemble properly
+  root.setTag('finished_flag', true);
   root.finish(b.toMillis());
 }
 
