@@ -53,7 +53,7 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: span_guid
+        - AttributeName: trace_guid
           AttributeType: S
         - AttributeName: span_guid
           AttributeType: S
