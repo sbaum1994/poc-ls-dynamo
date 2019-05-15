@@ -19,10 +19,14 @@ Resources:
         - AWSXrayWriteOnlyAccess
         - DynamoDBCrudPolicy:
             TableName: !Ref traceAggTable
+        - S3CrudPolicy:
+            BucketName: !Ref ReportStore
       Environment:
         Variables:
           TABLE_NAME: !Ref traceAggTable
           TABLE_ARN: !GetAtt traceAggTable.Arn
+          BUCKET_NAME: !Ref ReportStore
+          BUCKET_ARN: !GetAtt ReportStore.Arn
     Metadata:
       StackeryName: pushTraces
   traceAggTable:
@@ -64,8 +68,19 @@ Resources:
             Stream: !GetAtt traceAggTable.StreamArn
             StartingPosition: TRIM_HORIZON
             BatchSize: 1
+        ReportStore:
+          Type: S3
+          Properties:
+            Bucket: !Ref ReportStore
+            Events:
+              - s3:ObjectCreated:*
+              - s3:ObjectRemoved:*
     Metadata:
       StackeryName: Listener
+  ReportStore:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-reportsto-${AWS::AccountId}
 Parameters:
   StackeryStackTagName:
     Type: String
