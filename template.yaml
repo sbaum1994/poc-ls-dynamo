@@ -18,34 +18,13 @@ Resources:
       Policies:
         - AWSXrayWriteOnlyAccess
         - DynamoDBCrudPolicy:
-            TableName: !Ref traceAggTable
-        - S3CrudPolicy:
-            BucketName: !Ref ReportStore
+            TableName: !Ref traceTable
       Environment:
         Variables:
-          TABLE_NAME: !Ref traceAggTable
-          TABLE_ARN: !GetAtt traceAggTable.Arn
-          BUCKET_NAME: !Ref ReportStore
-          BUCKET_ARN: !GetAtt ReportStore.Arn
+          TABLE_NAME: !Ref traceTable
+          TABLE_ARN: !GetAtt traceTable.Arn
     Metadata:
       StackeryName: pushTraces
-  traceAggTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: id
-          AttributeType: S
-      KeySchema:
-        - AttributeName: id
-          KeyType: HASH
-      ProvisionedThroughput:
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 5
-      StreamSpecification:
-        StreamViewType: NEW_AND_OLD_IMAGES
-      TableName: !Sub ${AWS::StackName}-traceAggTable
-    Metadata:
-      StackeryName: TraceAgg
   Function:
     Type: AWS::Serverless::Function
     Properties:
@@ -61,25 +40,34 @@ Resources:
       Tracing: Active
       Policies:
         - AWSXrayWriteOnlyAccess
-        - S3CrudPolicy:
-            BucketName: !Ref ReportStore
       Events:
-        traceAggTable:
+        traceTable:
           Type: DynamoDB
           Properties:
-            Stream: !GetAtt traceAggTable.StreamArn
+            Stream: !GetAtt traceTable.StreamArn
             StartingPosition: TRIM_HORIZON
             BatchSize: 1
-      Environment:
-        Variables:
-          BUCKET_NAME: !Ref ReportStore
-          BUCKET_ARN: !GetAtt ReportStore.Arn
     Metadata:
       StackeryName: Listener
-  ReportStore:
-    Type: AWS::S3::Bucket
+  traceTable:
+    Type: AWS::DynamoDB::Table
     Properties:
-      BucketName: !Sub ${AWS::StackName}-reportsto-${AWS::AccountId}
+      AttributeDefinitions:
+        - AttributeName: span_guid
+          AttributeType: S
+        - AttributeName: trace_guid
+          AttributeType: S
+      KeySchema:
+        - AttributeName: span_guid
+          KeyType: HASH
+        - AttributeName: trace_guid
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-traceTable
 Parameters:
   StackeryStackTagName:
     Type: String
