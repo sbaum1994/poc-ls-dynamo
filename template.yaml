@@ -61,6 +61,8 @@ Resources:
       Tracing: Active
       Policies:
         - AWSXrayWriteOnlyAccess
+        - S3CrudPolicy:
+            BucketName: !Ref ReportStore
       Events:
         traceAggTable:
           Type: DynamoDB
@@ -68,13 +70,10 @@ Resources:
             Stream: !GetAtt traceAggTable.StreamArn
             StartingPosition: TRIM_HORIZON
             BatchSize: 1
-        ReportStore:
-          Type: S3
-          Properties:
-            Bucket: !Ref ReportStore
-            Events:
-              - s3:ObjectCreated:*
-              - s3:ObjectRemoved:*
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref ReportStore
+          BUCKET_ARN: !GetAtt ReportStore.Arn
     Metadata:
       StackeryName: Listener
   ReportStore:
