@@ -18,14 +18,38 @@ Resources:
       Policies:
         - AWSXrayWriteOnlyAccess
         - DynamoDBCrudPolicy:
-            TableName: !Ref traceAggTable
+            TableName: !Ref traceTable
       Environment:
         Variables:
-          TABLE_NAME: !Ref traceAggTable
-          TABLE_ARN: !GetAtt traceAggTable.Arn
+          TABLE_NAME: !Ref traceTable
+          TABLE_ARN: !GetAtt traceTable.Arn
     Metadata:
       StackeryName: pushTraces
-  traceAggTable:
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-Function
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: Listener
+      CodeUri: src/Function
+      Handler: index.handler
+      Runtime: nodejs8.10
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+      Events:
+        traceTable:
+          Type: DynamoDB
+          Properties:
+            Stream: !GetAtt traceTable.StreamArn
+            StartingPosition: TRIM_HORIZON
+            BatchSize: 1
+    Metadata:
+      StackeryName: Listener
+  traceTable:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
@@ -43,33 +67,7 @@ Resources:
         WriteCapacityUnits: 5
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
-      TableName: !Sub ${AWS::StackName}-traceAggTable
-    Metadata:
-      StackeryName: TraceAgg
-  Function:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub ${AWS::StackName}-Function
-      Description: !Sub
-        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
-        - ResourceName: Listener
-      CodeUri: src/Function
-      Handler: index.handler
-      Runtime: nodejs8.10
-      MemorySize: 3008
-      Timeout: 30
-      Tracing: Active
-      Policies:
-        - AWSXrayWriteOnlyAccess
-      Events:
-        traceAggTable:
-          Type: DynamoDB
-          Properties:
-            Stream: !GetAtt traceAggTable.StreamArn
-            StartingPosition: TRIM_HORIZON
-            BatchSize: 1
-    Metadata:
-      StackeryName: Listener
+      TableName: !Sub ${AWS::StackName}-traceTable
 Parameters:
   StackeryStackTagName:
     Type: String
