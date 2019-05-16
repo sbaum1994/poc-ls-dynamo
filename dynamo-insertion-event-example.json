@@ -1,0 +1,55 @@
+{
+  "Records": [
+      {
+          "eventID": "e6789db56d1146cc17ce5c4605603e97",
+          "eventName": "INSERT",
+          "eventVersion": "1.1",
+          "eventSource": "aws:dynamodb",
+          "awsRegion": "us-east-1",
+          "dynamodb": {
+              "ApproximateCreationDateTime": 1557957399,
+              "Keys": {
+                  "span_guid": {
+                      "S": "2d0000917c551e5a"
+                  },
+                  "trace_guid": {
+                      "S": "0b81215071f8c43a"
+                  }
+              },
+              "NewImage": {
+                  "span_guid": {
+                      "S": "2d0000917c551e5a"
+                  },
+                  "span_name": {
+                      "S": "op"
+                  },
+                  "youngest_micros": {
+                      "N": "1557951933629000"
+                  },
+                  "oldest_micros": {
+                      "N": "1557948333629000"
+                  },
+                  "trace_guid": {
+                      "S": "0b81215071f8c43a"
+                  },
+                  "runtime_guid": {
+                      "S": "60599caa0fa3ab23"
+                  },
+                  "attributes": {
+                      "L": []
+                  },
+                  "finished_flag": {
+                      "BOOL": true
+                  },
+                  "error_flag": {
+                      "BOOL": false
+                  }
+              },
+              "SequenceNumber": "300000000002126800402",
+              "SizeBytes": 223,
+              "StreamViewType": "NEW_AND_OLD_IMAGES"
+          },
+          "eventSourceARN": "arn:aws:dynamodb:us-east-1:470889421367:table/poc-ls-dynamo-development-traceTable/stream/2019-05-15T21:54:54.453"
+      }
+  ]
+}

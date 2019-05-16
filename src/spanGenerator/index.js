@@ -12,8 +12,10 @@ const tracer = new lightstep.Tracer({
   component_name   : 'longrunning',
   access_token     : '425c9b9734e6cd039b41689aa83937cd',
   verbosity        : 4,
-  override_transport : new BufferTransport()
+  // override_transport : new BufferTransport()
 });
+
+console.log(tracer._transport);
 
 const generateChild = (a, b, dur, parent, nm) => {
   let offset = Duration.fromMillis(dur.as('milliseconds')*0.10) // insert randomness here
