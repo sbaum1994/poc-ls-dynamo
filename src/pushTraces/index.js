@@ -73,6 +73,7 @@ const handleReport = async ({ requests }) => {
 }
 
 exports.handler = async message => {
+  console.log(message);
   let report;
   try {
     report = JSON.parse(message);

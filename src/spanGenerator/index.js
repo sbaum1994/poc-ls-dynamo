@@ -12,10 +12,8 @@ const tracer = new lightstep.Tracer({
   component_name   : 'longrunning',
   access_token     : '425c9b9734e6cd039b41689aa83937cd',
   verbosity        : 4,
-  // override_transport : new BufferTransport()
+  override_transport : new BufferTransport()
 });
-
-console.log(tracer._transport);
 
 const generateChild = (a, b, dur, parent, nm) => {
   let offset = Duration.fromMillis(dur.as('milliseconds')*0.10) // insert randomness here
@@ -56,6 +54,7 @@ const generateChildren = (a, b, dur, sp, num) => {
 const generateRoot = (dur) => {
   let b = DateTime.local();
   let a = b.minus(dur);
+  console.log(`Generating spans starting at ${a.toISO()} and ending at ${b.toISO()}`);
 
   let root = tracer.startSpan('op', { startTime: a.toMillis() });
   let child = generateChild(a, b, dur, root, 'child');
