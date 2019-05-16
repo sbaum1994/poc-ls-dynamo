@@ -50,6 +50,7 @@ Resources:
       Environment:
         Variables:
           ACCESS_TOKEN: 425c9b9734e6cd039b41689aa83937cd
+          TABLE_NAME: !Ref spanTable
     Metadata:
       StackeryName: Listener
   spanTable:
