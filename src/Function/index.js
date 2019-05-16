@@ -91,7 +91,7 @@ const generateReport = (spans, serviceName) => {
   // needs some thought to solve
 
   let { youngest_micros, oldest_micros } = getMicros(spans);
-  
+
   console.log(`Settings youngest_micros to: ${youngest_micros} and oldest_micros to ${oldest_micros}`);
 
   let detached = true; // idk what this is but its on all our reports
@@ -164,8 +164,9 @@ const processEvents = async (events) => {
 
 exports.handler = async (event, context) => {
   let eventsToProcess;
+  console.log(event);
   try {
-    let parsed = JSON.parse(event);
+    let parsed = event; // JSON.parse(event);
     eventsToProcess = [];
     if (parsed.Records) {
       eventsToProcess = parsed.Records.filter((rec) => {
