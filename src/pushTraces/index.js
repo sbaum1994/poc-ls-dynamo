@@ -4,7 +4,7 @@ const flatMap = require('array.prototype.flatmap');
 let dynamodb = new AWS.DynamoDB()
 
 const FINISH_FLAG_KEY = 'finished_flag';
-const FINISH_FLAG_VALUE = true;
+const FINISH_FLAG_VALUE = 'true';
 
 const mapSpanToDynamoRecord = (r, serviceName) => {
   // r.join_ids, not supporting these here, but they would be an array,
@@ -59,7 +59,9 @@ const handleReport = async ({ requests }) => {
   let allSpanRecords = flatMap(requests, (request) => {
     let spanRecords = request.report.span_records;
     let serviceNameFromRuntime = request.report.runtime.group_name;
-    return spanRecords.map((r) => {
+    return spanRecords.sort((a, b) => {
+        return a.youngest_micros - b.youngest_micros;
+      }).map((r) => {
       // process spans and push individually, for performance can do this as a batch
       // and push up to 25 at a time into Dynamo
 
