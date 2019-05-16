@@ -40,6 +40,8 @@ Resources:
       Tracing: Active
       Policies:
         - AWSXrayWriteOnlyAccess
+        - DynamoDBCrudPolicy:
+            TableName: !Ref spanTable
       Events:
         spanTable:
           Type: DynamoDB
@@ -50,6 +52,8 @@ Resources:
       Environment:
         Variables:
           ACCESS_TOKEN: 425c9b9734e6cd039b41689aa83937cd
+          TABLE_NAME: !Ref spanTable
+          TABLE_ARN: !GetAtt spanTable.Arn
     Metadata:
       StackeryName: Listener
   spanTable:
