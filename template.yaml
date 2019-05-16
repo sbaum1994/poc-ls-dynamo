@@ -47,6 +47,9 @@ Resources:
             Stream: !GetAtt spanTable.StreamArn
             StartingPosition: TRIM_HORIZON
             BatchSize: 1
+      Environment:
+        Variables:
+          ACCESS_TOKEN: 425c9b9734e6cd039b41689aa83937cd
     Metadata:
       StackeryName: Listener
   spanTable:
