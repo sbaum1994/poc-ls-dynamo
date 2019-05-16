@@ -74,12 +74,12 @@ const handleReport = async ({ requests }) => {
 
 exports.handler = async message => {
   console.log(message);
-  let report;
-  try {
-    report = JSON.parse(message);
-  } catch (err) {
-    return new Error(`Invalid JSON for report: ${err}`);
-  }
+  let report = message;
+  // try {
+  //   report = JSON.parse(message);
+  // } catch (err) {
+  //   throw new Error(`Invalid JSON for report: ${err}`);
+  // }
 
   if (!report.requests) {
     return;
@@ -91,7 +91,7 @@ exports.handler = async message => {
     console.log('Wrote to dynamo, done.');
   } catch (err) {
     console.log(err);
-    return new Error(`Handling report failed: ${err}`);
+    throw new Error(`Handling report failed: ${err}`);
   }
 
   return {};
