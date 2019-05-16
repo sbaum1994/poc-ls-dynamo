@@ -64,5 +64,9 @@ const generateRoot = (dur) => {
   root.finish(b.toMillis());
 }
 
-const duration = Duration.fromObject({ minutes: 60 });
-generateRoot(duration);
+const duration = Duration.fromObject({ minutes: 400 });
+const generateContinuous = (duration) => {
+  generateRoot(duration);
+  setTimeout(() => generateContinuous(duration), 300);
+}
+generateContinuous(duration);

@@ -2,7 +2,6 @@ const AWS = require('aws-sdk');
 AWS.config.update({ region: 'us-east-1' });
 const dynamodb = new AWS.DynamoDB()
 const FINISHED_FLAG_KEY = 'finished_flag';
-const { DateTime, Duration } = require('luxon');
 const submitReportToSatellites = require('./submit-report');
 
 const isFinishedEvent = (e) => {
