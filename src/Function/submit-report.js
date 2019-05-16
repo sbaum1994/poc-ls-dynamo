@@ -1,11 +1,8 @@
 const request = require('request-promise');
 
-// This is hacky and bad.
-// Might have more luck with a tracer that exposes the transport
-// types better like Java. In this case I'm copying the data model
+// This is a hacky workaround. In this case I'm copying the data model
 // from the tracer files (means that you have to maintain it separately
 // instead of relying on the tracer library, bad!!!)
-const lightstep = require('lightstep-tracer');
 const crouton_thrift = require('./crouton-thrift');
 
 // where r is report.runtime
@@ -47,7 +44,8 @@ const translateSpanRecordToThrift = (s) => {
     error_flag      : s.error_flag,
     log_records     : [],
     // right now log_records are null
-    // they'd have to be coerced to thrift too if they weren't null
+    // they'd have to be coerced to thrift too
+    // if they weren't null
   });
 };
 
@@ -69,31 +67,11 @@ const translateToThrift = (r) => {
   });
 };
 
-class Auth {
-  constructor(auth) {
-    this._auth = auth;
-  }
-
-  getAccessToken() {
-    return this._auth.access_token;
-  }
-}
-
-class ReportRequest {
-  constructor(report) {
-    this._report = report;
-  }
-
-  toThrift() {
-    return translateToThrift(this._report);
-  }
-}
-
 const submitReportManual = (req) => {
   let auth = req.auth;
-  console.log(req.auth.access_token);
   let detached = req.detached; // turns out this doesn't matter at all
   let report = translateToThrift(req.report);
+  // For submitting to developer satellite when running locally
   // let url = 'http://localhost:9001/api/v0/reports';
   let url = 'http://collector-http.lightstep.com:80/api/v0/reports';
   return request.post(url, {
@@ -106,28 +84,7 @@ const submitReportManual = (req) => {
 }
 
 const submitReportToSatellites = (request) => {
-  // console.log(request.report.runtime)
-
-  // return submitReportManualJson(request);
   return submitReportManual(request);
-  // let fakeTracer = new lightstep.Tracer({
-  //   transport: 'thrift',
-  //   collector_host: 'collector-http.lightstep.com',
-  //   collector_port: 443,
-  //   verbosity: 4,
-  //   access_token: process.env.ACCESS_TOKEN,
-  // });
-  // let transport = fakeTracer._transport;
-  // transport._host = 'collector-http.lightstep.com';
-  // transport._port = 80;
-
-  // let auth = new Auth(request.auth);
-  // let reportRequest = new ReportRequest(request.report);
-  // return new Promise((resolve,reject) => {
-  //   transport.report(request.detached, auth, reportRequest, function(err, res) {
-  //     err ? reject(err) : resolve(res);
-  //   });
-  // });
 }
 
 module.exports = submitReportToSatellites;

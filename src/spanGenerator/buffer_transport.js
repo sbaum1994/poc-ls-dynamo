@@ -1,6 +1,4 @@
-var fs           = require("fs");
 var deepClone    = require("clone");
-var _            = require("underscore");
 
 // Make sure the creds are correct!
 const AWS = require('aws-sdk');
@@ -25,8 +23,6 @@ BufferTransport.prototype.invoke = (payloadObject) => {
       if (err) {
         reject(err);
       } else {
-        // debugging
-        // console.error(response);
         resolve(response);
       }
     });
@@ -40,9 +36,11 @@ BufferTransport.prototype.ensureConnection = function() {
 BufferTransport.prototype.report = function(detached, auth, report, done) {
   report = deepClone(report);
 
-  // Not stripping null fields but might have to at some point
-  // (it could be an optimization, need to investigate if it will 
-  // break anything upstream)
+  /*
+    Not stripping null fields but might have to at some point
+    (it could be an optimization, need to investigate if it will 
+    break anything upstream)
+  */
   this._requests.push({
     detached : detached,
     auth : auth.toThrift(),
@@ -50,11 +48,6 @@ BufferTransport.prototype.report = function(detached, auth, report, done) {
   });
 
   // Send to lambda function here
-
-  // Debugging
-  console.log(JSON.stringify({
-    requests: this._requests,
-  }));
 
   this.invoke({ requests: this._requests })
     .then((resp) => {

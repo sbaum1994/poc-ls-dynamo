@@ -84,25 +84,27 @@ const getMicros = (spans) => {
 }
 
 const generateReport = (spans, serviceName) => {
-  // Note: not handling runtime at all in any good way here
-  // this means that all the spans being submitted don't have a tracer platform defined
-  // they just look like they're coming from this lambda function
-  // needs some thought to solve
+  /*  Note: Not handling original runtime at all
+      this means that all the spans being submitted don't have a tracer
+      platform defined, they just look like they're coming from this
+      lambda function. Needs some thought to solve. */
 
+  // Note: Explorer shows spans based on arrival time from the satellite buffer not start/finish time/oldest/youngest
   let { youngest_micros, oldest_micros } = getMicros(spans);
 
   console.log(`Settings youngest_micros to: ${youngest_micros} and oldest_micros to ${oldest_micros}`);
 
-  let detached = true; // idk what this is but its on all our reports
+  let detached = true;
   let auth = {
     access_token: process.env.ACCESS_TOKEN
   };
+
+  // Note: The below runtime attributes MUST be set or the satellite will reject the spans
   let runtime = {
     guid: spans[0].runtime_guid,
-    // Note: might need manipulating here to get it to show up in Explorer at the right time
     start_micros: youngest_micros,
     group_name: serviceName,
-    attrs: [ // fake
+    attrs: [ // fake data
       {
         Key: 'lightstep.tracer_version',
         Value: '0.21.1'
@@ -118,6 +120,7 @@ const generateReport = (spans, serviceName) => {
     ]
   };
 
+  // Standard report object format before its converted to JSON Thrift
   return Promise.resolve(
     {
       detached,
@@ -163,9 +166,9 @@ const processEvents = async (events) => {
 
 exports.handler = async (event, context) => {
   let eventsToProcess;
-  console.log(event);
+
   try {
-    let parsed = event; // JSON.parse(event);
+    let parsed = event; // JSON.parse(event), turns out the event is already parsed when it comes in
     eventsToProcess = [];
     if (parsed.Records) {
       eventsToProcess = parsed.Records.filter((rec) => {

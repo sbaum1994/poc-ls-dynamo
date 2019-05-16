@@ -1,7 +1,12 @@
-const AWS = require('aws-sdk');
-AWS.config.update({ region: 'us-east-1' });
+
 const flatMap = require('array.prototype.flatmap');
-let dynamodb = new AWS.DynamoDB()
+
+/*  Assuming permissions are properly configured for this lambda,
+    this is the only configuration that would be needed */
+const AWS = require('aws-sdk');
+/* Recommendation: use process.env.AWS_REGION */
+AWS.config.update({ region: 'us-east-1' });
+const dynamodb = new AWS.DynamoDB()
 
 const FINISH_FLAG_KEY = 'finished_flag';
 const FINISH_FLAG_VALUE = 'true';
@@ -9,34 +14,56 @@ const FINISH_FLAG_VALUE = 'true';
 const mapSpanToDynamoRecord = (r, serviceName) => {
   // r.join_ids, not supporting these here, but they would be an array,
   // unsure how the SaaS would handle them but likely would be fine
-  // r.log_records, ignoring logs right now but it would be an array
+  // r.log_records, ignoring logs right now but it would be a string array
+  // or array list
 
-  // attributes are the tags
-  // look for a flag in the tags, if this tag exists and is true
-  // this is the last span in the trace
+  // Attributes refer to the span tags
+
+  // look for a flag in the tags of the span,
+  // if this tag exists and is true,
+  // then this is the last span in the trace
   let finished_flag = r.attributes.some((tag) => {
     return (tag.Key === FINISH_FLAG_KEY) && (tag.Value === FINISH_FLAG_VALUE);
   });
 
-  // translate attributes to a map list for dynamo
+  // Translates attributes to a map list for dynamo
+  // Attributes refer to the span tags.
   let translatedAttributes = r.attributes.map((attr) => {
     return {
       M: {
         Key: { S: attr.Key },
         Value: { S: `${attr.Value}` }
-        // warning, not maintaining types in the tags here,
-        // would need to add more metadata to get around that
-        // also need to validate how this looks with different tags i.e. a tag that is a full object, a tag that is a number
+        /* 
+          Warning, not maintaining types in the tags here,
+          would need to add more metadata or handling
+          to get around this so that tags are submitted with the proper
+          typing independent of the language of the tracer reporting.
+
+          Example of types to handle -
+            a tag that is a full object,
+            a tag that is a number,
+            a tag that is a 
+            
+          Similar thing would need to be done for log handling
+        */
       }
     }
   });
 
-  // maybe store all this stuff separately except for span_guid, trace_guid and the finished flag
-  // was thinking something like s3 for storing span batches, but that gets complicated ;)
+  /*
+    Maybe consider storing all this span stuff separately except for
+    span_guid, trace_guid and the finished_flag. There's also some data that 
+    can be condensed.
+
+    This would be so that DynamoDB is purely transactional and not holding as much.
   
-  // could also use AWS.DynamoDB.Converter.marshall to do this but I prefer manual
-  // since I don't know how that function will marshall certain things, and whether
-  // it will marshall to what I expect.
+    Was thinking something like S3 for storing span batches, but that gets complicated
+    since you then have to maintain a mapping of the report/span batch.
+  
+    Could also use AWS.DynamoDB.Converter.marshall to do this conversion but I prefer manual
+    since I don't know how that function will marshall certain things, and whether
+    it will marshall values to what I expect.
+  */
   let params = {
     TableName: process.env.TABLE_NAME,
     Item: {
@@ -62,9 +89,13 @@ const handleReport = async ({ requests }) => {
     return spanRecords.sort((a, b) => {
         return a.youngest_micros - b.youngest_micros;
       }).map((r) => {
-      // process spans and push individually, for performance can do this as a batch
-      // and push up to 25 at a time into Dynamo
-
+      /*  
+          Process spans and push individually,
+          for performance can do this as a batch
+          and push up to 25 at a time into DynamoDB
+          just make sure that the batch event is handled
+          correctly on the other end by the listener function
+      */
       let params = mapSpanToDynamoRecord(r, serviceNameFromRuntime);
 
       console.log('Attempting to put a span record in dynamo.');
@@ -75,13 +106,7 @@ const handleReport = async ({ requests }) => {
 }
 
 exports.handler = async message => {
-  console.log(message);
   let report = message;
-  // try {
-  //   report = JSON.parse(message);
-  // } catch (err) {
-  //   throw new Error(`Invalid JSON for report: ${err}`);
-  // }
 
   if (!report.requests) {
     return;

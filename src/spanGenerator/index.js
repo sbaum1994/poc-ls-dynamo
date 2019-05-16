@@ -2,12 +2,10 @@ const { DateTime, Duration } = require('luxon');
 const lightstep = require('lightstep-tracer');
 const BufferTransport = require('./buffer_transport');
 
-// Run this locally to generate some fake long running spans
-
-// Note: for some reason these don't assembly correclty in the UI unless you clik
-// on the root span in Explorer (i.e. child spans will cause an assembly failure)
-// probably because the timestamps are spoofed.
-
+/*
+  Run this locally to generate some fake long running spans
+  and forward to lambda for testing.
+*/
 const tracer = new lightstep.Tracer({
   component_name   : 'longrunning',
   access_token     : '425c9b9734e6cd039b41689aa83937cd',
@@ -20,7 +18,6 @@ const generateChild = (a, b, dur, parent, nm) => {
   let na = a.plus(offset);
   let nb = b.minus(offset);
 
-  // let nspan = tracer.startSpan('op2', { parent : parent.context() });
   let nspan = tracer.startSpan(nm, { startTime: na.toMillis(), childOf : parent.context() });
   nspan.finish(nb.toMillis());
   return {
@@ -59,7 +56,8 @@ const generateRoot = (dur) => {
   let root = tracer.startSpan('op', { startTime: a.toMillis() });
   let child = generateChild(a, b, dur, root, 'child');
   let children = generateChildren(child.a, child.b, child.dur, child.span, 3);
-  // need to click on root in the ui to trigger the trace to assemble properly
+
+  // important flag, telling listener this is the last span/longest running span in the trace
   root.setTag('finished_flag', true);
   root.finish(b.toMillis());
 }
