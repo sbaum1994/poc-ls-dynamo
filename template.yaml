@@ -25,14 +25,33 @@ Resources:
           TABLE_ARN: !GetAtt spanTable.Arn
     Metadata:
       StackeryName: pushTraces
-  Function:
+  spanTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: trace_guid
+          AttributeType: S
+        - AttributeName: span_guid
+          AttributeType: S
+      KeySchema:
+        - AttributeName: trace_guid
+          KeyType: HASH
+        - AttributeName: span_guid
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-spanTable
+  listener:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${AWS::StackName}-Function
+      FunctionName: !Sub ${AWS::StackName}-listener
       Description: !Sub
         - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
-        - ResourceName: Listener
-      CodeUri: src/Function
+        - ResourceName: listener
+      CodeUri: src/listener
       Handler: index.handler
       Runtime: nodejs8.10
       MemorySize: 3008
@@ -55,26 +74,7 @@ Resources:
           TABLE_NAME: !Ref spanTable
           TABLE_ARN: !GetAtt spanTable.Arn
     Metadata:
-      StackeryName: Listener
-  spanTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: trace_guid
-          AttributeType: S
-        - AttributeName: span_guid
-          AttributeType: S
-      KeySchema:
-        - AttributeName: trace_guid
-          KeyType: HASH
-        - AttributeName: span_guid
-          KeyType: RANGE
-      ProvisionedThroughput:
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 5
-      StreamSpecification:
-        StreamViewType: NEW_AND_OLD_IMAGES
-      TableName: !Sub ${AWS::StackName}-spanTable
+      StackeryName: listener
 Parameters:
   StackeryStackTagName:
     Type: String
