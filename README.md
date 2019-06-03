@@ -2,6 +2,8 @@
 
 See individual function folders for write ups on each function.
 
+FYI: The sample access token is checked into this repo and would need to be replaced.
+
 The overall flow is:
 
 App Tracing Client --> AWS Lambda `pushTraces` --> DynamoDB `spanTable` --> AWS Lambda `listener` --> LightStep Satellites --> LightStep SaaS
