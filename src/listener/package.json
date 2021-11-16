@@ -1,7 +1,7 @@
 {
   "private": true,
   "dependencies": {
-    "aws-sdk": "^2.456.0",
+    "aws-sdk": "^2.814.0",
     "lightstep-tracer": "^0.22.0",
     "luxon": "^1.13.2",
     "opentracing": "^0.14.3",
