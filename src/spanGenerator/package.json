@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.456.0",
+    "aws-sdk": "^2.814.0",
     "clone": "^2.1.2",
     "lightstep-tracer": "^0.22.0",
     "luxon": "^1.13.2",
