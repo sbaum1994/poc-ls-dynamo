@@ -3,7 +3,7 @@
   "dependencies": {
     "aws-sdk": "^2.456.0",
     "lightstep-tracer": "^0.22.0",
-    "luxon": "^1.13.2",
+    "luxon": "^1.28.1",
     "opentracing": "^0.14.3",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
